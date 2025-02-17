@@ -15,31 +15,14 @@ from datetime import datetime
 @app.route('/index')
 @login_required
 def index():
-    posts_one = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }, 
-        {
-            'author': {'username': 'Ипполит'},
-            'body': 'Какая гадость эта ваша заливная рыба!!'
-        }
-    ]
-    posts = Post.query.filter_by(user_id=current_user.id).all()
-    return render_template('index.html', title='Home',posts=posts, posts_one=posts_one, user=current_user)
+    following_posts = User.followed_posts(self=current_user)
+    return render_template('index.html', title='Home', posts=following_posts, user=current_user)
 
 @app.route('/user/<login>')
 @login_required
 def user(login):
     user = User.query.filter_by(login=login).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
+    posts = Post.query.filter_by(user_id=current_user.id).all()
     return render_template('user.html', user=user, posts=posts)
     
 @app.before_request
@@ -57,7 +40,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(login=form.login.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid login or password')
+            #flash('Invalid login or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -82,7 +65,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        #flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('registration.html', title='Registration', form=form)
 
@@ -91,14 +74,14 @@ def register():
 def follow(login): 
     user = User.query.filter_by(login=login).first()
     if user is None:
-        flash('User {} not found.'.format(login))
+        #flash('User {} not found.'.format(login))
         return redirect(url_for('index'))
     if user == current_user:
-        flash('You cannot follow yourself!')
+        #flash('You cannot follow yourself!')
         return redirect(url_for('user', login=login))
     current_user.follow(user)
     db.session.commit()
-    flash('You are following {}!'.format(login))
+    #flash('You are following {}!'.format(login))
     return redirect(url_for('user', login=login))
 
 @app.route('/unfollow/<login>')
@@ -106,14 +89,14 @@ def follow(login):
 def unfollow(login):
     user = User.query.filter_by(login=login).first()
     if user is None:
-        flash('User {} not found.'.format(login))
+        #flash('User {} not found.'.format(login))
         return redirect(url_for('index'))
     if user == current_user:
-        flash('You cannot unfollow yourself!')
+        #flash('You cannot unfollow yourself!')
         return redirect(url_for('user', login=login))
     current_user.unfollow(user)
     db.session.commit()
-    flash('You are not following {}.'.format(login))
+    #flash('You are not following {}.'.format(login))
     return redirect(url_for('user', login=login))
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -124,7 +107,7 @@ def edit_profile():
         current_user.login = form.login.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        flash('Your changes have been saved.')
+        #flash('Your changes have been saved.')
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.login.data = current_user.login

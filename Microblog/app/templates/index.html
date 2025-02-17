@@ -3,8 +3,12 @@
 {% block content %}
 <body>
     <h1>Hi, {{ current_user.login }}!</h1>
-    {% for post in posts_one %}
-        <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+    <b>Peoples posts that you are following:</b>
+    {% for post in posts %}
+        <div style="height: 30%; margin: 2%; background-color:#f5f5f5">
+            <b>{{ post.body }}</b>
+            <p>{{ post.timestamp }}</p>
+        </div>
     {% endfor %}
 </body>
 {% endblock %}

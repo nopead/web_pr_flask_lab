@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-md-3 text-right">
                             {% if user == current_user %}
-                                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary float-right">Edit your profile</a>
+                                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary float-right" styles="background-color:#333333">Edit your profile</a>
                             {% elif not current_user.is_following(user) %}
                                 <a href="{{ url_for('follow', login=user.login) }}" class="btn btn-primary float-right">Follow</a>
                             {% else %}
@@ -31,7 +31,12 @@
                     </div>
                     <hr>
                     {% for post in posts %}
-                        {% include '_post.html' %}
+                        <div>
+                            <div style="background-color:#e5e5e5">
+                                <h3>{{ post.body }}</h3>
+                                <p>{{ post.timestamp }}</p>
+                            </div>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
