@@ -15,8 +15,9 @@ from datetime import datetime
 @app.route('/index')
 @login_required
 def index():
-    following_posts = User.followed_posts(self=current_user).order_by()
+    following_posts = User.followed_posts(self=current_user)
     return render_template('index.html', title='Home', posts=following_posts, user=current_user)
+
 
 @app.route('/user/<login>')
 @login_required
@@ -24,7 +25,8 @@ def user(login):
     user = User.query.filter_by(login=login).first_or_404()
     posts = Post.query.filter_by(user_id=current_user.id).all()
     return render_template('user.html', user=user, posts=posts)
-    
+
+
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
@@ -49,6 +51,7 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Login', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -69,6 +72,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('registration.html', title='Registration', form=form)
 
+
 @app.route('/follow/<login>')
 @login_required
 def follow(login): 
@@ -84,6 +88,7 @@ def follow(login):
     flash('You are following {}!'.format(login))
     return redirect(url_for('user', login=login))
 
+
 @app.route('/unfollow/<login>')
 @login_required
 def unfollow(login):
@@ -98,6 +103,7 @@ def unfollow(login):
     db.session.commit()
     #flash('You are not following {}.'.format(login))
     return redirect(url_for('user', login=login))
+
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

@@ -10,6 +10,7 @@ followers = db.Table('followers',
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
 )
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
@@ -74,7 +75,8 @@ class Post(db.Model):
         db.session.add(post)
         db.session.commit()
         return post
-    
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

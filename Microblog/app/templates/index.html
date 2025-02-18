@@ -5,10 +5,13 @@
     <h1>Hi, {{ current_user.login }}!</h1>
     <b>Peoples posts that you are following:</b>
     {% for post in posts %}
-        <div style="height: 30%; margin: 2%; background-color:#f5f5f5">
-            <b>{{ post.body }}</b>
-            <p>{{ post.timestamp }}</p>
-        </div>
+        <table>
+            <tr valign="top">
+                <td><img src="{{ user.avatar(30) }}" class="rounded-circle"></td>
+                <td><br>{{ post.body }}</td>
+                <td><br>{{ post.timestamp }}</td>
+            </tr>
+        </table>
     {% endfor %}
 </body>
 {% endblock %}
