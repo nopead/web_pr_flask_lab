@@ -15,7 +15,7 @@ from datetime import datetime
 @app.route('/index')
 @login_required
 def index():
-    following_posts = User.followed_posts(self=current_user)
+    following_posts = User.followed_posts(self=current_user).order_by()
     return render_template('index.html', title='Home', posts=following_posts, user=current_user)
 
 @app.route('/user/<login>')
@@ -65,7 +65,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        #flash('Congratulations, you are now a registered user!')
+        flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('registration.html', title='Registration', form=form)
 
@@ -74,14 +74,14 @@ def register():
 def follow(login): 
     user = User.query.filter_by(login=login).first()
     if user is None:
-        #flash('User {} not found.'.format(login))
+        flash('User {} not found.'.format(login))
         return redirect(url_for('index'))
     if user == current_user:
-        #flash('You cannot follow yourself!')
+        flash('You cannot follow yourself!')
         return redirect(url_for('user', login=login))
     current_user.follow(user)
     db.session.commit()
-    #flash('You are following {}!'.format(login))
+    flash('You are following {}!'.format(login))
     return redirect(url_for('user', login=login))
 
 @app.route('/unfollow/<login>')
@@ -89,10 +89,10 @@ def follow(login):
 def unfollow(login):
     user = User.query.filter_by(login=login).first()
     if user is None:
-        #flash('User {} not found.'.format(login))
+        flash('User {} not found.'.format(login))
         return redirect(url_for('index'))
     if user == current_user:
-        #flash('You cannot unfollow yourself!')
+        flash('You cannot unfollow yourself!')
         return redirect(url_for('user', login=login))
     current_user.unfollow(user)
     db.session.commit()
@@ -107,7 +107,7 @@ def edit_profile():
         current_user.login = form.login.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        #flash('Your changes have been saved.')
+        flash('Your changes have been saved.')
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.login.data = current_user.login
