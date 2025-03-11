@@ -2,13 +2,13 @@
 from flask import render_template, flash, redirect, url_for
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
-from app.models import User, Post
+from app.models import User, Post, followers
 from flask_login import current_user, login_user
 from flask_login import logout_user
 from flask_login import login_required
 from flask import request
 from urllib.parse import urlparse 
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @app.route('/')
@@ -19,18 +19,18 @@ def index():
     return render_template('index.html', title='Home', posts=following_posts, user=current_user)
 
 
-@app.route('/user/<login>')
+@app.route('/<login>')
 @login_required
 def user(login):
     user = User.query.filter_by(login=login).first_or_404()
-    posts = Post.query.filter_by(user_id=current_user.id).all()
+    posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('user.html', user=user, posts=posts)
 
 
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
+        current_user.last_seen = datetime.now(timezone.utc)
         db.session.commit()
 
  
@@ -101,22 +101,35 @@ def unfollow(login):
         return redirect(url_for('user', login=login))
     current_user.unfollow(user)
     db.session.commit()
-    #flash('You are not following {}.'.format(login))
+    flash('You are not following {}.'.format(login))
     return redirect(url_for('user', login=login))
 
 
-@app.route('/edit_profile', methods=['GET', 'POST'])
+@app.route('/<login>/edit', methods=['GET', 'POST'])
 @login_required
-def edit_profile():
-    form = EditProfileForm(current_user.login)
+def edit_profile(login):
+    form = EditProfileForm(login)
     if form.validate_on_submit():
         current_user.login = form.login.data
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('edit_profile'))
+        return redirect(url_for('user', login=login))
     elif request.method == 'GET':
         form.login.data = current_user.login
         form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title='Edit Profile', form=form)
+    return render_template('edit_profile.html', title='Edit Profile', form=form, login=login)
 
+
+@app.route('/<login>/followed/', methods=['GET'])
+@login_required
+def followed(login):
+    user = User.query.filter_by(login=login).first()
+    return render_template('users.html', users=user.get_followed())
+
+
+@app.route('/<login>/followers', methods=['GET'])
+@login_required
+def followers(login):
+    user = User.query.filter_by(login=login).first()
+    return render_template('users.html', users=user.get_followers())

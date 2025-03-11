@@ -1,0 +1,46 @@
+/* Основные стили для контейнера постов */
+.posts-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 30px 0px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* Стили для карточки поста */
+.post-card {
+    background-color: #ffffff; /* Цвет фона карточки */
+    border-radius: 10px; /* Закругление углов карточки */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень для глубины */
+    margin: 5px;
+    padding: 15px; /* Внутренние отступы */
+    max-width: 300px; /* Максимальная ширина карточки */
+    min-width: 200px;
+    text-align: center; /* Центрирование текста */
+    transition: transform 0.2s; /* Плавный эффект при наведении */
+}
+
+.post-card:hover {
+    transform: translateY(-3px); /* Подъем карточки при наведении */
+}
+
+/* Стили для изображения пользователя */
+.post-card img {
+    width: 60px; /* Ширина аватара */
+    height: 60px; /* Высота аватара */
+    margin-bottom: 10px; /* Отступ снизу изображения */
+}
+
+/* Стили для текста поста */
+.post-card p {
+    font-size: 14px; /* Размер текста поста */
+    color: #333; /* Цвет текста поста */
+    margin: 5px 0; /* Отступы для текста */
+}
+
+/* Стили для метки времени */
+.post-card .timestamp {
+    font-size: 12px; /* Размер текста для времени */
+    color: #aaa; /* Цвет текста для времени */
+}

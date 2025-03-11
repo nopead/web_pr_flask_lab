@@ -1,32 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h1 class="text-center">Edit Profile</h1>
-                <form action="" method="post">
-                    {{ form.hidden_tag() }}
-                    <div class="form-group">
-                        {{ form.login.label(class="form-control-label") }}
-                        {{ form.login(class="form-control", size=32) }}
-                        {% for error in form.login.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </div>
-                    <div class="form-group">
-                        {{ form.about_me.label(class="form-control-label") }}
-                        {{ form.about_me(class="form-control", cols=50, rows=4) }}
-                        {% for error in form.about_me.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-block">Accept</button>
-                    </div>
-                </form>
+    {% if login == current_user.login %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <h1 class="text-center">Edit Profile</h1>
+                    <form action="" method="post">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.login.label(class="form-control-label") }}
+                            {{ form.login(class="form-control", size=32) }}
+                            {% for error in form.login.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.about_me.label(class="form-control-label") }}
+                            {{ form.about_me(class="form-control", cols=50, rows=4) }}
+                            {% for error in form.about_me.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-block">Accept</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    {% else %}
+        <h1>403 forbidden</h1>
+    {% endif %}
 {% endblock %}
 

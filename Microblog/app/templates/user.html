@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='posts.css') }}" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+{% endblock %}
+
 {% block content %}
     <div class="container">
         <div class="row justify-content-center">
@@ -17,28 +24,65 @@
                             {% if user.last_seen %}
                                 <p>Last seen on: {{ user.last_seen }}</p>
                             {% endif %}
-                            <p>{{ user.followers.count() }} followers, {{ user.followed.count() }} following.</p>
+                            <a role="button" data-toggle="modal" data-target="#followedModal"> {{ user.followed.count() }} following.</a>
+                            <a role="button" data-toggle="modal" data-target="#followersModal"> {{ user.followers.count() }} followers</a>
                         </div>
                         <div class="col-md-3 text-right">
                             {% if user == current_user %}
-                                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary float-right" styles="background-color:#333333">Edit your profile</a>
+                                <a href="{{ url_for('edit_profile', login=user.login) }}" class="btn btn-primary float-right" styles="background-color:#333333">Edit your profile</a>
                             {% elif not current_user.is_following(user) %}
                                 <a href="{{ url_for('follow', login=user.login) }}" class="btn btn-primary float-right">Follow</a>
                             {% else %}
                                 <a href="{{ url_for('unfollow', login=user.login) }}" class="btn btn-danger float-right">Unfollow</a>
                             {% endif %}
                         </div>
+                        <hr>
+                        <div class="posts-container">
+                        {% for post in posts %}
+                            <div class="post-card">
+                                <img src="{{ user.avatar(30) }}" class="rounded-circle">
+                                <br>{{ post.body }}
+                                <p class="timestamp">{{ post.timestamp }}</p>
+                            </div>
+                        {% endfor %}
+                        </div>
+                        <div class="modal fade" id="followedModal" role="dialog" aria-labelledby="followedModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followedModalLabel">{{user.name}} following</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                                    </div>
+                                    <div class="modal-body" id="followedContent">
+                                        {% for follower in user.followed %}
+                                            <div class="followed-card">
+                                                <img src="{{follower.avatar(32)}}">
+                                                <a href="/{{follower.login}}">{{follower.name}}</a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="followersModal" role="dialog" aria-labelledby="followersModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followersModalLabel">{{user.name}} followers</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                                    </div>
+                                    <div class="modal-body" id="followersContent">
+                                        {% for follower in user.followers %}
+                                            <div class="followed-card">
+                                                <img src="{{follower.avatar(32)}}">
+                                                <a href="/{{follower.login}}">{{follower.name}}</a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <hr>
-                    {% for post in posts %}
-                        <table>
-                            <tr valign="top">
-                                <td><img src="{{ user.avatar(30) }}" class="rounded-circle"></td>
-                                <td><br>{{ post.body }}</td>
-                                <td><br>{{ post.timestamp }}</td>
-                            </tr>
-                        </table>
-                    {% endfor %}
                 </div>
             </div>
         </div>
