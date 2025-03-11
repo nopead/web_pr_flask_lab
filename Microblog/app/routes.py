@@ -12,10 +12,9 @@ from datetime import datetime, timezone
 
 
 @app.route('/')
-@app.route('/index')
 @login_required
 def index():
-    following_posts = User.followed_posts(self=current_user)
+    following_posts = User.followed_posts(self=current_user).all()
     return render_template('index.html', title='Home', posts=following_posts, user=current_user)
 
 
@@ -64,7 +63,7 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(name = form.name.data, surname = form.surname.data, login=form.login.data, email=form.email.data)
+        user = User(name=form.name.data, surname=form.surname.data, login=form.login.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -73,9 +72,9 @@ def register():
     return render_template('registration.html', title='Registration', form=form)
 
 
-@app.route('/follow/<login>')
+@app.route('/follow/<login>/<redirect_to>')
 @login_required
-def follow(login): 
+def follow_user(login, redirect_to):
     user = User.query.filter_by(login=login).first()
     if user is None:
         flash('User {} not found.'.format(login))
@@ -86,12 +85,12 @@ def follow(login):
     current_user.follow(user)
     db.session.commit()
     flash('You are following {}!'.format(login))
-    return redirect(url_for('user', login=login))
+    return redirect(url_for('user', login=redirect_to))
 
 
-@app.route('/unfollow/<login>')
+@app.route('/unfollow/<login>/<redirect_to>')
 @login_required
-def unfollow(login):
+def unfollow_user(login, redirect_to):
     user = User.query.filter_by(login=login).first()
     if user is None:
         flash('User {} not found.'.format(login))
@@ -102,7 +101,7 @@ def unfollow(login):
     current_user.unfollow(user)
     db.session.commit()
     flash('You are not following {}.'.format(login))
-    return redirect(url_for('user', login=login))
+    return redirect(url_for('user', login=redirect_to))
 
 
 @app.route('/<login>/edit', methods=['GET', 'POST'])

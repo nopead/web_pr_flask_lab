@@ -1,0 +1,13 @@
+.user-card{
+   padding: 5px 5px 5px 5px;
+   margin: 5px 0px;
+}
+
+.user-card img{
+    padding 2px 2px 2px 2px;
+    margin-left: 2px;
+}
+
+.user-card b{
+    margin-left: 5px;
+}
